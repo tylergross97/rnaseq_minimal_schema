@@ -58,6 +58,16 @@ workflow NFCORE_RNASEQ {
 
     main:
 
+    // Validate that at least one input source is provided
+    if (!params.input && !params.fetchngs_outdir) {
+        error "Please provide either --input (samplesheet CSV) or --fetchngs_outdir (S3 path to fetchngs output directory)."
+    }
+
+    // Validate that at least one input source is provided
+    if (!params.input && !params.fetchngs_outdir) {
+        error "Please provide either --input (samplesheet CSV) or --fetchngs_outdir (S3 path to fetchngs output directory)."
+    }
+
     //
     // SUBWORKFLOW: Prepare reference genome files (FASTA, GTF, BED, transcript FASTA, chrom.sizes, rRNA FASTAs, Kraken DB)
     //
@@ -127,7 +137,27 @@ workflow NFCORE_RNASEQ {
     //
     // WORKFLOW: Run nf-core/rnaseq workflow
     //
-    ch_samplesheet = channel.value(file(params.input, checkIfExists: true))
+    // When triggered by a fetchngs bucket event, discover the samplesheet
+    // from the fetchngs output directory instead of requiring --input.
+    //
+    if (params.fetchngs_outdir) {
+        def samplesheet_path = "${params.fetchngs_outdir}/samplesheet/samplesheet.csv"
+        log.info "Discovering samplesheet from fetchngs output: ${samplesheet_path}"
+        ch_samplesheet = channel.value(file(samplesheet_path, checkIfExists: true))
+    }
+    else {
+        // When triggered by a fetchngs bucket event, discover the samplesheet
+    // from the fetchngs output directory instead of requiring --input.
+    //
+    if (params.fetchngs_outdir) {
+        def samplesheet_path = "${params.fetchngs_outdir}/samplesheet/samplesheet.csv"
+        log.info "Discovering samplesheet from fetchngs output: ${samplesheet_path}"
+        ch_samplesheet = channel.value(file(samplesheet_path, checkIfExists: true))
+    }
+    else {
+        ch_samplesheet = channel.value(file(params.input, checkIfExists: true))
+    }
+    }
     def qc_tools = defineQcTools(params)
 
     RNASEQ (
@@ -168,6 +198,16 @@ workflow NFCORE_RNASEQ {
 workflow {
 
     main:
+
+    // Validate that at least one input source is provided
+    if (!params.input && !params.fetchngs_outdir) {
+        error "Please provide either --input (samplesheet CSV) or --fetchngs_outdir (S3 path to fetchngs output directory)."
+    }
+
+    // Validate that at least one input source is provided
+    if (!params.input && !params.fetchngs_outdir) {
+        error "Please provide either --input (samplesheet CSV) or --fetchngs_outdir (S3 path to fetchngs output directory)."
+    }
     //
     // SUBWORKFLOW: Run initialisation tasks
     //

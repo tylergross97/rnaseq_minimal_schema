@@ -10,7 +10,9 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
+            "required": [
+                "outdir"
+            ],
             "properties": {
                 "input": {
                     "type": "string",
@@ -23,6 +25,13 @@
                     "pattern": "^\\S+\\.csv$",
                     "fa_icon": "fas fa-file-csv",
                     "errorMessage": "The input must be a valid CSV file path with no spaces, ending in '.csv', and must exist."
+                },
+                "fetchngs_outdir": {
+                    "type": "string",
+                    "description": "S3 path to a fetchngs output directory. When set, the pipeline discovers the samplesheet at <fetchngs_outdir>/samplesheet/samplesheet.csv automatically, and --input is not required.",
+                    "help_text": "Use this parameter when triggering nf-core/rnaseq from a Seqera Platform bucket event action that watches for fetchngs completion.",
+                    "format": "directory-path",
+                    "fa_icon": "fas fa-folder-open"
                 },
                 "outdir": {
                     "type": "string",
@@ -263,7 +272,10 @@
                     "default": "trimgalore",
                     "description": "Specifies the trimming tool to use - available options are 'trimgalore' and 'fastp'.",
                     "fa_icon": "fas fa-cut",
-                    "enum": ["trimgalore", "fastp"]
+                    "enum": [
+                        "trimgalore",
+                        "fastp"
+                    ]
                 },
                 "extra_trimgalore_args": {
                     "type": "string",
@@ -328,7 +340,11 @@
                     "fa_icon": "fas fa-tools",
                     "description": "Tool to use for rRNA removal.",
                     "help_text": "Choose between 'sortmerna' (default), 'bowtie2', or 'ribodetector' for rRNA removal.\n\n- **sortmerna**: Reference-based filtering (default). Requires `--ribo_database_manifest`. Note: Default databases include SILVA sequences requiring licensing for commercial use.\n- **bowtie2**: Alignment-based filtering. Requires `--ribo_database_manifest`. Recommended for users with SILVA licensing concerns as it supports custom databases.\n- **ribodetector**: ML-based detection without a reference requirement. Useful for organisms lacking well-characterized rRNA sequences or to avoid database licensing requirements.",
-                    "enum": ["sortmerna", "ribodetector", "bowtie2"]
+                    "enum": [
+                        "sortmerna",
+                        "ribodetector",
+                        "bowtie2"
+                    ]
                 },
                 "bowtie2_rrna_index": {
                     "type": "string",
@@ -373,7 +389,10 @@
                     "default": "umitools",
                     "description": "Specifies the tool to use for UMI deduplication - available options are 'umitools' and 'umicollapse'.",
                     "fa_icon": "fas fa-barcode",
-                    "enum": ["umitools", "umicollapse"]
+                    "enum": [
+                        "umitools",
+                        "umicollapse"
+                    ]
                 },
                 "umitools_extract_method": {
                     "type": "string",
@@ -414,7 +433,13 @@
                     "default": "directional",
                     "fa_icon": "far fa-object-ungroup",
                     "description": "Method to use to determine read groups by subsuming those with similar UMIs. All methods start by identifying the reads with the same mapping position, but treat similar yet nonidentical UMIs differently.",
-                    "enum": ["unique", "percentile", "cluster", "adjacency", "directional"]
+                    "enum": [
+                        "unique",
+                        "percentile",
+                        "cluster",
+                        "adjacency",
+                        "directional"
+                    ]
                 },
                 "umitools_dedup_stats": {
                     "type": "boolean",
@@ -442,7 +467,12 @@
                     "default": "star_salmon",
                     "description": "Specifies the alignment algorithm to use - available options are 'star_salmon', 'star_rsem', 'hisat2', and 'bowtie2_salmon'.",
                     "fa_icon": "fas fa-map-signs",
-                    "enum": ["star_salmon", "star_rsem", "hisat2", "bowtie2_salmon"],
+                    "enum": [
+                        "star_salmon",
+                        "star_rsem",
+                        "hisat2",
+                        "bowtie2_salmon"
+                    ],
                     "help_text": "Use 'bowtie2_salmon' for prokaryotic RNA-seq data. Bowtie2 is a splice-unaware aligner and is not recommended for eukaryotic data."
                 },
                 "use_sentieon_star": {
@@ -465,7 +495,10 @@
                     "type": "string",
                     "description": "Specifies the pseudo aligner to use - available options are 'salmon'. Runs in addition to '--aligner'.",
                     "fa_icon": "fas fa-hamburger",
-                    "enum": ["salmon", "kallisto"]
+                    "enum": [
+                        "salmon",
+                        "kallisto"
+                    ]
                 },
                 "pseudo_aligner_kmer_size": {
                     "type": "integer",
@@ -693,15 +726,24 @@
                     "type": "string",
                     "description": "Tool to use for detecting contaminants in the selected screening reads - available options are 'sylph', 'kraken2', or 'kraken2_bracken'",
                     "fa_icon": "fas fa-virus-slash",
-                    "enum": ["kraken2", "kraken2_bracken", "sylph"]
+                    "enum": [
+                        "kraken2",
+                        "kraken2_bracken",
+                        "sylph"
+                    ]
                 },
                 "contaminant_screening_input": {
                     "type": "string",
                     "description": "Read set to screen for contaminants: aligner-unmapped reads (default), trimmed reads (post-BBSplit/rRNA), post-trim pre-BBSplit reads, or raw reads.",
-                    "help_text": "Use `unmapped` (default) to screen reads rejected by STAR/HISAT2 — requires alignment. Use `trimmed` to screen reads that passed BBSplit and rRNA filtering before alignment. Use `trim_only` to screen reads after adapter trimming but before BBSplit/rRNA removal — recommended when BBSplit removes expected contaminants. Use `raw` to screen pre-trimming reads (adapter sequences still present). `unmapped` requires `--aligner star_salmon`, `--aligner star_rsem`, or `--aligner hisat2`.",
+                    "help_text": "Use `unmapped` (default) to screen reads rejected by STAR/HISAT2 \u2014 requires alignment. Use `trimmed` to screen reads that passed BBSplit and rRNA filtering before alignment. Use `trim_only` to screen reads after adapter trimming but before BBSplit/rRNA removal \u2014 recommended when BBSplit removes expected contaminants. Use `raw` to screen pre-trimming reads (adapter sequences still present). `unmapped` requires `--aligner star_salmon`, `--aligner star_rsem`, or `--aligner hisat2`.",
                     "default": "unmapped",
                     "fa_icon": "fas fa-filter",
-                    "enum": ["trimmed", "unmapped", "trim_only", "raw"]
+                    "enum": [
+                        "trimmed",
+                        "unmapped",
+                        "trim_only",
+                        "raw"
+                    ]
                 },
                 "kraken_db": {
                     "type": "string",
@@ -716,7 +758,15 @@
                     "fa_icon": "fas fa-tree",
                     "description": "Taxonomic level for Bracken abundance estimations.",
                     "help_text": "Use the first letter of taxonomic levels: Domain, Phylum, Class, Order, Family, Genus, or Species. Requires --contaminant_screening option to be set to 'kraken2_bracken' to have an effect.",
-                    "enum": ["D", "P", "C", "O", "F", "G", "S"]
+                    "enum": [
+                        "D",
+                        "P",
+                        "C",
+                        "O",
+                        "F",
+                        "G",
+                        "S"
+                    ]
                 },
                 "sylph_db": {
                     "type": "string",
@@ -929,7 +979,14 @@
                     "description": "Method used to save pipeline results to output directory.",
                     "help_text": "Controls how files are saved to the output directory through Nextflow's `publishDir` directive. See the [Nextflow documentation](https://www.nextflow.io/docs/latest/process.html#publishdir) for available options.",
                     "fa_icon": "fas fa-copy",
-                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
+                    "enum": [
+                        "symlink",
+                        "rellink",
+                        "link",
+                        "copy",
+                        "copyNoFollow",
+                        "move"
+                    ],
                     "hidden": true
                 },
                 "email_on_fail": {
@@ -1011,7 +1068,10 @@
                     "hidden": true
                 },
                 "help": {
-                    "type": ["boolean", "string"],
+                    "type": [
+                        "boolean",
+                        "string"
+                    ],
                     "description": "Display the help message."
                 },
                 "help_full": {
